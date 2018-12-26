@@ -18,7 +18,7 @@ export default class App extends React.Component {
 
   _isNumber = (num) => {
     if(num != null)
-        return(num != '+' && num != '*' && num != '-' && num != '/'); 
+        return(num != '+' && num != '*' && num != '-' && num != '/' && num != '^');
     return false;   
   }
 
@@ -57,7 +57,17 @@ export default class App extends React.Component {
         for (j=0; j < mathArray.length; j++) {
 
           if(mathArray[j] != null)
-          switch(mathArray[j]["sign"]) { //Passa uma primeira vez no vetor para dar prioridade à multiplicação e divisão
+          switch(mathArray[j]["sign"]) { //Passa uma primeira vez no vetor para dar prioridade à exponenciação
+            case '^':  mathArray[j]["number"] = Math.pow(mathArray[j]["number"], mathArray[j+1]["number"]);
+                       this._removeIndex(j+1);
+                       break;
+          }
+        }
+
+        for (j=0; j < mathArray.length; j++) {
+
+          if(mathArray[j] != null)
+          switch(mathArray[j]["sign"]) { //Passa uma segunda para priorizar multiplicação e divisão
             case '/':  mathArray[j]["number"] /= mathArray[j+1]["number"];
                        this._removeIndex(j+1);
                        break; 
@@ -81,10 +91,9 @@ export default class App extends React.Component {
                          this._removeIndex(j+1);
                          break;  
           }
+        }
       }
-    }
       this.setState({text: mathArray[0]["number"].toString()});
-
   }
 
   _removeIndex = (i) => {
@@ -123,7 +132,7 @@ export default class App extends React.Component {
         
         <View style={styles.buttoncontainer}>          
           <TouchableOpacity ref="touch" style={styles.containedbutton} onPress={() => this._clear()}><Text style={[styles.containedbuttontext, styles.buttontexthighlight]}>AC</Text></TouchableOpacity>
-          <TouchableOpacity ref="touch" style={styles.containedbutton} onPress={() => this._backspace() }><Text style={styles.containedbuttontext}>A</Text></TouchableOpacity>
+          <TouchableOpacity ref="touch" style={styles.containedbutton} onPress={() => this._backspace() }><Text style={styles.containedbuttontext}>C</Text></TouchableOpacity>
           <TouchableOpacity ref="touch" style={styles.containedbutton} onPress={() => this._addSign('*')}><Text style={styles.containedbuttontext}>*</Text></TouchableOpacity>
           <TouchableOpacity ref="touch" style={styles.containedbutton} onPress={() => this._addSign('/')}><Text style={styles.containedbuttontext}>/</Text></TouchableOpacity>
 
@@ -142,7 +151,7 @@ export default class App extends React.Component {
           <TouchableOpacity ref="touch" style={styles.containedbutton} onPress={() => this._addNum(3)}><Text style={styles.containedbuttontext}>3</Text></TouchableOpacity>
           <TouchableOpacity ref="touch" style={styles.containedbutton} onPress={() => this._addNum('.')}><Text style={styles.containedbuttontext}>.</Text></TouchableOpacity>
           
-          <View style={styles.containedbutton}></View>
+          <TouchableOpacity ref="touch" style={styles.containedbutton} onPress={() => this._addSign('^')}><Text style={styles.containedbuttontext}>xⁿ</Text></TouchableOpacity>
           <TouchableOpacity ref="touch" style={styles.containedbutton} onPress={() => this._addNum(0)}><Text style={styles.containedbuttontext}>0</Text></TouchableOpacity>
           <View style={styles.containedbutton}></View>
           <TouchableOpacity ref="touch" style={[styles.containedbutton, styles.buttonequals]} onPress={() => this._calculate() }><Text style={[styles.containedbuttontext, styles.buttonequals]}>=</Text></TouchableOpacity>
